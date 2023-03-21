@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template, url_for, redirect, session, flash
+from flask import Flask, render_template, url_for, redirect, session, flash, request
 from flask_wtf import FlaskForm
 from wtforms import ValidationError, StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo
@@ -75,7 +75,7 @@ class BlogPost(db.Model):
 
 
 class RegistrationForm(FlaskForm):
-    email = StringField('メールアドレス', validators=[DataRequired(), Email(message='正しいメッセージを入力してください')])
+    email = StringField('メールアドレス', validators=[DataRequired(), Email(message='正しいメールアドレスを入力してください')])
     username = StringField('ユーザ名', validators=[DataRequired()])
     password = PasswordField('パスワード', validators=[DataRequired(), EqualTo('pass_confirm', message='パスワードが一致していません')])
     pass_confirm = PasswordField('パスワード(確認)', validators=[DataRequired()])
@@ -87,6 +87,27 @@ class RegistrationForm(FlaskForm):
 
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first():
+            raise ValidationError('入力されたメールアドレスは既に登録されています')
+
+
+class UpdateUserForm(FlaskForm):
+    email = StringField('メールアドレス', validators=[DataRequired(), Email(message='正しいメールアドレスを入力してください')])
+    username = StringField('ユーザ名', validators=[DataRequired()])
+    password = PasswordField('パスワード', validators=[EqualTo('pass_confirm', message='パスワードが一致していません')])
+    pass_confirm = PasswordField('パスワード(確認)')
+    submit = SubmitField('更新')
+
+    def __init__(self, user_id, *args, **kwargs):
+        super(UpdateUserForm, self).__init__(*args, **kwargs)
+        self.id = user_id
+
+
+    def validate_username(self, field):
+        if User.query.filter(User.id != self.id).filter_by(username=field.data).first():
+            raise ValidationError('入力されたユーザ名は既に使われています')
+
+    def validate_email(self, field):
+        if User.query.filter(User.id != self.id).filter_by(email=field.data).first():
             raise ValidationError('入力されたメールアドレスは既に登録されています')
 
 
@@ -107,9 +128,35 @@ def register():
 
 @app.route('/user_maintenance')
 def user_maintenance():
-   users = User.query.order_by(User.id).all()
+   page = request.args.get('page', 1, type=int)
+   users = User.query.order_by(User.id).paginate(page=page, per_page=10)
    return render_template('user_maintenance.html', users=users)
 
+
+@app.route('/<int:user_id>/account', methods=['GET', 'POST'])
+def account(user_id):
+    user = User.query.get_or_404(user_id)
+    form = UpdateUserForm(user_id)
+    if form.validate_on_submit():
+        user.username = form.username.data
+        user.email = form.username.data
+        if form.password.data:
+            user.password_hash = form.password.data
+        db.session.commit()
+        flash('ユーザアカウントが更新されました')
+        return redirect(url_for('user_maintenance'))
+    elif request.method == 'GET':
+        form.username.data = user.username
+        form.email.data = user.email
+    return render_template('account.html', form=form)
+
+@app.route('/<int:user_id>/delete_usr', methods=['GET', 'POST'])
+def delete_usr(user_id):
+    user = User.query.get_or_404(user_id)
+    db.session.delete(user)
+    db.session.commit()
+    flash('ユーザアカウントが削除されました')
+    return redirect(url_for('user_maintenance'))
 
 if __name__ == '__main__':
    app.run(debug=True)
