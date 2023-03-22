@@ -12,6 +12,7 @@
   </section>
 
   <!-- 登録ボタン -->
+  {% if current_user.is_administrator() %}
   <section id="register">
     <div class="container">
       <div class="row bg-light my-3">
@@ -21,6 +22,7 @@
       </div>
     </div>
   </section>
+  {% endif %}
 
   <!-- 更新テーブル -->
   <section id="user_table">
@@ -47,7 +49,11 @@
             <td>{{ user.email }}</td>
             <td>{{ user.administrator }}</td>
             <td><a href="#">ブログ管理数</a></td>
-            <td><a href="{{ url_for('account', user_id=user.id) }}" class="btn btn-secondary">変更</a></td>
+            <td>
+              {% if current_user.is_administrator() or current_user.id == user.id %}
+                <a href="{{ url_for('account', user_id=user.id) }}" class="btn btn-secondary">変更</a>
+              {% endif %}
+            </td>
           </tr>
           {% endfor %}
         </tbody>

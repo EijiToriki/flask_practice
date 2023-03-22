@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
   <!-- 削除ボタン -->
+  {% if current_user.is_administrator() %}
   <section>
     <div class="container">
       <div class="row bg-light my-5">
@@ -10,7 +11,9 @@
           </button>
         </div>
     </div>
-  <!-- モーダル -->
+    {% endif %}
+
+    <!-- モーダル -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
