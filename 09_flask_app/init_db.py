@@ -1,6 +1,7 @@
 from company_blog import db
 from company_blog.models import User
 
+# db.drop_all()
 db.create_all()
 
 user1 = User(email='admin@test.com', username='Admin', password='123', administrator='1')

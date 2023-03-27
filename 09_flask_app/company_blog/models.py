@@ -50,18 +50,53 @@ class BlogPost(db.Model):
     __tablename__ = 'blog_post'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    category_id = db.Column(db.Integer, db.ForeignKey('blog_category.id'))
     date = db.Column(db.DateTime, default=datetime.now(timezone('Asia/Tokyo')))
     title = db.Column(db.String(140))
     text = db.Column(db.Text)
     summary = db.Column(db.String(140))
     featured_image = db.Column(db.String(140))
 
-    def __init__(self, user_id, title, text, summary, featured_image):
+    def __init__(self, user_id, title, text, summary, featured_image, category_id):
         self.user_id = user_id
         self.title = title
         self.text = text
+        self.category_id = category_id
         self.summary = summary
         self.featured_image = featured_image
 
     def __repr__(self):
         return f"PostID : {self.id}, Title : {self.title}, Author : {self.author} \n"
+
+
+class BlogCategory(db.Model):
+    __tablename__ = 'blog_category'
+    id = db.Column(db.Integer, primary_key=True)
+    category = db.Column(db.String(140))
+    posts = db.relationship('BlogPost', backref='blogcategory', lazy='dynamic')
+
+    def __init__(self, category):
+        self.category = category
+    
+    def __repr__(self):
+        return f"CategoryID: {self.id}, CategoryName: {self.category} \n"
+
+
+class Inquiry(db.Model):
+    __tablename__ = 'inquiry'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64))
+    email = db.Column(db.String(64))
+    title = db.Column(db.String(140))
+    text = db.Column(db.Text)
+    date = db.Column(db.DateTime, default=datetime.now(timezone('Asia/Tokyo')))
+
+    def __init__(self, name, email, title, text):
+        self.name = name
+        self.email = email
+        self.title = title
+        self.text = text
+    
+    def __repr__(self):
+        return f"InquiryID: {self.id}, Name: {self.name}, Text: {self.text} \n"
+

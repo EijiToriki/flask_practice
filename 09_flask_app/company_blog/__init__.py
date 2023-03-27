@@ -34,8 +34,10 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor.close()
 
 
+from company_blog.main.views import main
 from company_blog.users.views import users
 from company_blog.error_pages.handlers import error_pages
 
+app.register_blueprint(main)
 app.register_blueprint(users)
 app.register_blueprint(error_pages)
