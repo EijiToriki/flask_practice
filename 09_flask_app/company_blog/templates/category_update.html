@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+  <!-- 削除ボタン -->
+  {% if current_user.is_administrator() %}
+  <section>
+    <div class="container">
+      <div class="row bg-light my-5">
+        <div class="col-10 py-4">
+          <button type="button" class="btn btn-danger btn-lg w-25" data-bs-toggle="modal" data-bs-target="#categoryUpdateModal">
+            削除
+          </button>
+        </div>
+    </div>
+    {% endif %}
+
+  <!-- モーダル -->
+    <div class="modal fade" id="categoryUpdateModal" tabindex="-1" aria-labelledby="categoryUpdateModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="categoryUpdateModalLabel">削除確認</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            このカテゴリを削除しますか？
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+            <form action="{{ url_for('main.delete_category', category_id=form.id )}}" method="post">
+              <input type="submit" class="btn btn-danger" value="削除">
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 更新フォーム -->
+  <section>
+    <div class="card mx-auto my-5 bg-success" style="width: 24rem;">
+      <div class="card-body">
+        <h5 class="card-title text-light fs-2 text-center">カテゴリ更新</h5>
+        <p class="card-text text-light text-center">ブログカテゴリ情報を変更してください</p>
+        <form method="post">
+          {{ form.hidden_tag() }}
+          <div class="mb-3">
+            {{ render_field(form.category, class="form-control", placeholder="カテゴリ名")}}
+          </div>
+          <div class="d-grid gap-2">
+            {{ form.submit(class="btn btn-outline-light w-100", value="更新") }}
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+
+{% endblock %}
