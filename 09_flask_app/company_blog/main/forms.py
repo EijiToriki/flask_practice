@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, ValidationError
+from wtforms import StringField, SubmitField, ValidationError, TextAreaField, SelectField
 from wtforms.validators import DataRequired
 from company_blog.models import BlogCategory
+from flask_wtf.file import FileField, FileAllowed
 
 class BlogCategoryForm(FlaskForm):
     category = StringField('カテゴリ名', validators=[DataRequired()])
@@ -22,3 +23,21 @@ class UpdateCategoryForm(FlaskForm):
     def validate_category(self, field):
         if BlogCategory.query.filter_by(category=field.data).first():
             raise ValidationError('入力されたカテゴリ名は既に使われています。')
+
+
+class BlogPostForm(FlaskForm):
+    title = StringField('タイトル', validators=[DataRequired()])
+    category = SelectField('カテゴリ', coerce=int)
+    summary = StringField('要約', validators=[DataRequired()])
+    text = TextAreaField('本文', validators=[DataRequired()])
+    picture = FileField('アイキャッチ画像', validators=[FileAllowed(['jpg', 'png'])])
+    submit = SubmitField('投稿')
+
+    def _set_category(self):
+        blog_categories = BlogCategory.query.all()
+        self.category.choices = [(blog_category.id, blog_category.category) for blog_category in blog_categories]
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._set_category()
+

@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, request, url_for, redirect, flash, abort
 from flask_login import login_required, current_user
-from company_blog.models import BlogCategory
-from company_blog.main.forms import BlogCategoryForm, UpdateCategoryForm
+from company_blog.models import BlogCategory, BlogPost
+from company_blog.main.forms import BlogCategoryForm, UpdateCategoryForm, BlogPostForm
 from company_blog import db
+from company_blog.main.image_handler import add_featured_image
 
 main = Blueprint('main', __name__)
 
@@ -52,3 +53,20 @@ def delete_category(category_id):
     db.session.commit()
     flash('カテゴリが削除されました')
     return redirect(url_for('main.category_maintenance'))
+
+
+@main.route('/create_post', methods=['GET', 'POST'])
+@login_required
+def create_post():
+    form = BlogPostForm()
+    if form.validate_on_submit():
+        if form.picuture.data:
+            pic = add_featured_image(form.picuture.data)
+        else:
+            pic = ''
+        blog_post = BlogPost(title=form.title.data, text=form.text.data, featured_image=pic, user_id=current_user.id, category_id=form.category.id, summary=form.summary.data)
+        db.session.add(blog_post)
+        db.session.commit()
+        flash('ブログ投稿が作成されました')
+        return redirect(url_for('main.category_maintenance'))
+    return render_template('create_post.html', form=form)
