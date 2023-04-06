@@ -7,6 +7,17 @@ from company_blog.main.image_handler import add_featured_image
 
 main = Blueprint('main', __name__)
 
+
+@main.route('/blog_maintenance', methods=['GET', 'POST'])
+@login_required
+def blog_maintenance():
+    page = request.args.get('page', 1, type=int)
+    blog_posts = BlogPost.query.order_by(BlogPost.id.desc()).paginate(page=page, per_page=10)
+
+    return render_template('blog_maintenance.html', blog_posts=blog_posts)
+
+
+
 @main.route('/category_maintenance', methods=['GET', 'POST'])
 @login_required
 def category_maintenance():
@@ -60,13 +71,58 @@ def delete_category(category_id):
 def create_post():
     form = BlogPostForm()
     if form.validate_on_submit():
-        if form.picuture.data:
-            pic = add_featured_image(form.picuture.data)
+        print(form.category.id)
+        if form.picture.data:
+            pic = add_featured_image(form.picture.data)
         else:
             pic = ''
-        blog_post = BlogPost(title=form.title.data, text=form.text.data, featured_image=pic, user_id=current_user.id, category_id=form.category.id, summary=form.summary.data)
+        blog_post = BlogPost(title=form.title.data, text=form.text.data, featured_image=pic, user_id=current_user.id, category_id=form.category.data, summary=form.summary.data)
         db.session.add(blog_post)
         db.session.commit()
         flash('ブログ投稿が作成されました')
-        return redirect(url_for('main.category_maintenance'))
+        return redirect(url_for('main.blog_maintenance'))
+    return render_template('create_post.html', form=form)
+
+
+@main.route('/<int:blog_post_id>/blog_post')
+def blog_post(blog_post_id):
+    blog_post = BlogPost.query.get_or_404(blog_post_id)
+    return render_template('blog_post.html', post=blog_post)
+
+
+@main.route('/<int:blog_post_id>/delete_post', methods=['GET', 'POST'])
+@login_required
+def delete_post(blog_post_id):
+    blog_post = BlogPost.query.get_or_404(blog_post_id)
+    if blog_post.author != current_user:
+        abort(403)
+    db.session.delete(blog_post)
+    db.session.commit()
+    flash('ブログ投稿が削除されました')
+    return redirect(url_for('main.blog_maintenance'))
+
+
+@main.route('/<int:blog_post_id>/update_post', methods=['GET', 'POST'])
+@login_required
+def update_blog_post(blog_post_id):
+    post = BlogPost.query.get_or_404(blog_post_id)
+    if post.author != current_user:
+        abort(403)
+    form = BlogPostForm()
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.category_id = form.category.data
+        post.summary = form.summary.data
+        post.text = form.text.data
+        if form.picture.data:
+            post.featured_image = add_featured_image(form.picture.data)
+        db.session.commit()
+        flash('ブログ記事が更新されました')
+        return redirect(url_for('main.blog_post', blog_post_id=post.id))
+    elif request.method == 'GET':
+        form.title.data = post.title
+        form.category.data = post.category_id
+        form.summary.data = post.summary
+        form.text.data = post.text
+        form.picture.data = post.featured_image
     return render_template('create_post.html', form=form)

@@ -10,7 +10,7 @@
                 <h4>ブログ投稿</h4>
               </div>
               <div class="card-body">
-                <form action="POST" enctype="multipart/form-data">
+                <form method="POST" enctype="multipart/form-data">
                   {{ form.hidden_tag() }}
                   <div class="mb-3">
                     {{ form.title.label(class="form-control-label") }}
