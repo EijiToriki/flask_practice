@@ -130,6 +130,7 @@ def update_blog_post(blog_post_id):
 
 @main.route('/')
 def index():
+    search_word = ''
     form = BlogSearchForm()
     # ブログ記事の取得
     page = request.args.get('page', 1, type=int)
@@ -149,3 +150,31 @@ def index():
         form=form
     )
 
+
+@main.route('/search', methods=['GET', 'POST'])
+def search():
+    form = BlogSearchForm()
+    searchtext = ""
+
+    if form.validate_on_submit():
+        searchtext = form.searchText.data
+    elif request.method == 'GET':
+        form.searchText.data == ""
+    # ブログ記事の取得
+    page = request.args.get('page', 1, type=int)
+    blog_posts = BlogPost.query.filter((BlogPost.text.contains(searchtext)) | (BlogPost.title.contains(searchtext)) | (BlogPost.summary.contains(searchtext))).order_by(BlogPost.id.desc()).paginate(page=page, per_page=10)
+
+    # 最新記事の取得
+    recent_blog_posts = BlogPost.query.order_by(BlogPost.id.desc()).limit(5).all()
+
+    # カテゴリの取得
+    blog_categories = BlogCategory.query.order_by(BlogCategory.id.asc()).all()
+
+    return render_template(
+        'index.html', 
+        blog_posts=blog_posts, 
+        recent_blog_posts=recent_blog_posts, 
+        blog_categories=blog_categories,
+        form=form,
+        search_word=searchtext
+    )

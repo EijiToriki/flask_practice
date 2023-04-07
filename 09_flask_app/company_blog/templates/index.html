@@ -5,9 +5,14 @@
     <div class="container my-3 bg-light">
       <div class="row">
         <div class="col-md-6 m-auto text-center">
-          <h1 class="fst-italic">Tori Inc. Blog</h1>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque, voluptatum!</p>
+          {% if search_word %}
+            <h1 class="fst-italic">"{{ search_word }}" の検索結果</h1>
+          {% else %}
+            <h1 class="fst-italic">Tori Inc. Blog</h1>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque, voluptatum!</p>
+          {% endif %}
         </div>
+        
       </div>
     </div>
   </header>
@@ -24,9 +29,9 @@
             <div class="col-6 mb-4">
               <div class="card h-100">
                 <div class="card-body" style="max-height: 26rem;">
-                  {% if post.featured_imgae %}
+                  {% if post.featured_image %}
                   <div class="mb-3" style="text-align: center;">
-                    <img src="{{ url_for('static', filename='featured_imgae/' + post.featured_image) }}" class="img-fluid card-img-top" style="max-height: 10rem;">
+                    <img src="{{ url_for('static', filename='featured_image/' + post.featured_image) }}" class="img-fluid card-img-top" style="max-height: 10rem;">
                   </div>
                   {% endif %}
                   <h3>
@@ -49,7 +54,7 @@
         <div class="position-sticky" style="top: 2rem">
           <!-- 検索欄 -->
           <div class="container-fluid mb-3">
-            <form action="#" class="d-flex" method="POST">
+            <form action="{{ url_for('main.search') }}" class="d-flex" method="POST">
               {{ form.hidden_tag() }}
               {{ render_field(form.searchText, class="form-control me-2", placeholder="検索するテキストを入力")}}
               {{ form.submit(class="btn btn-outline-success") }}
@@ -70,8 +75,8 @@
                 {% for recent_post in recent_blog_posts %}
                 <li>
                   <a href="{{ url_for('main.blog_post', blog_post_id=recent_post.id) }}" class="text-decoration-none">
-                    {% if recent_post.featured_imgae %}
-                      <img src="{{ url_for('static', filename='featured_imgae/' + recent_post.featured_image) }}" class="img-fluid" width="90" height="50">
+                    {% if recent_post.featured_image %}
+                      <img src="{{ url_for('static', filename='featured_image/' + recent_post.featured_image) }}" class="img-fluid" width="90" height="50">
                     {% endif %}
                     <span class="ms-2">{{ recent_post.title }}</span>
                   </a>
