@@ -55,7 +55,7 @@
     </div>
   </section>
 
-<section id="pagenation">
+  <section id="pagenation">
     <nav aria-label="mantenance_page_navigation">
       <ul class="pagination my-3 justify-content-center">
         <li {% if blog_posts.has_prev %}class="page-item"{% else %}class="page-item disabled"{% endif %}><a class="page-link" href="{% if blog_posts.has_prev %}{{url_for('main.blog_maintenance', page=blog_posts.prev_num) }}{% else %}#{% endif %}">前へ</a></li>

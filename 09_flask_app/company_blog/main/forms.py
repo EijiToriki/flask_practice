@@ -41,3 +41,7 @@ class BlogPostForm(FlaskForm):
         super().__init__(*args, **kwargs)
         self._set_category()
 
+
+class BlogSearchForm(FlaskForm):
+    searchText = StringField('検索テキスト', validators=[DataRequired()])
+    submit = SubmitField('検索')
