@@ -2,8 +2,9 @@ from flask import render_template, url_for, redirect, flash, request, abort
 from flask_login import login_user, logout_user, login_required, current_user
 
 from company_blog import db
-from company_blog.models import User
+from company_blog.models import User, BlogPost, BlogCategory
 from company_blog.users.forms import RegistrationForm, LoginForm, UpdateUserForm
+from company_blog.main.forms import BlogSearchForm
 
 from flask import Blueprint
 
@@ -93,3 +94,29 @@ def delete_usr(user_id):
     db.session.commit()
     flash('ユーザアカウントが削除されました')
     return redirect(url_for('users.user_maintenance'))
+
+@users.route('/<int:user_id>/user_posts')
+@login_required
+def user_posts(user_id):
+    form = BlogSearchForm()
+    # ユーザの取得
+    user = User.query.filter_by(id=user_id).first_or_404()
+
+    # ブログ記事の取得
+    page = request.args.get('page', 1, type=int)
+    blog_posts = BlogPost.query.filter_by(user_id=user_id).order_by(BlogPost.id.desc()).paginate(page=page, per_page=10)
+
+    # 最新記事の取得
+    recent_blog_posts = BlogPost.query.order_by(BlogPost.id.desc()).limit(5).all()
+
+    # カテゴリの取得
+    blog_categories = BlogCategory.query.order_by(BlogCategory.id.asc()).all()
+
+    return render_template(
+        'index.html', 
+        blog_posts=blog_posts, 
+        recent_blog_posts=recent_blog_posts, 
+        blog_categories=blog_categories,
+        form=form,
+        user=user
+    )

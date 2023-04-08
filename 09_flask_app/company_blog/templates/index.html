@@ -7,6 +7,10 @@
         <div class="col-md-6 m-auto text-center">
           {% if search_word %}
             <h1 class="fst-italic">"{{ search_word }}" の検索結果</h1>
+          {% elif user %}
+            <h1 class="fst-italic">{{ user.username }}</h1>  
+          {% elif blog_category %}
+            <h1 class="fst-italic">{{ blog_category.category }}</h1>
           {% else %}
             <h1 class="fst-italic">Tori Inc. Blog</h1>
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque, voluptatum!</p>
@@ -95,7 +99,7 @@
               <ol class="list-unstyled">
                 {% for blog_category in blog_categories %}
                 <li>
-                  <a href="#" class="text-decoration-none">
+                  <a href="{{ url_for('main.category_search', blog_category_id=blog_category.id) }}" class="text-decoration-none">
                     <span class="ms-2">{{ blog_category.category }}</span>
                   </a>
                 </li>

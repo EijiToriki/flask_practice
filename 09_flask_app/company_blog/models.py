@@ -45,6 +45,10 @@ class User(db.Model, UserMixin):
             return 1
         else:
             return 0
+        
+    def count_posts(self, userid):
+        return BlogPost.query.filter_by(user_id=userid).count()
+
   
 class BlogPost(db.Model):
     __tablename__ = 'blog_post'
@@ -80,6 +84,9 @@ class BlogCategory(db.Model):
     
     def __repr__(self):
         return f"CategoryID: {self.id}, CategoryName: {self.category} \n"
+    
+    def count_posts(self, id):
+        return BlogPost.query.filter_by(category_id=id).count()
 
 
 class Inquiry(db.Model):

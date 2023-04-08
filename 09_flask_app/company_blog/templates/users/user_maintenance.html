@@ -48,7 +48,9 @@
             <td>{{ user.username }}</td>
             <td>{{ user.email }}</td>
             <td>{{ user.administrator }}</td>
-            <td><a href="#">ブログ管理数</a></td>
+            <td><a href="{{ url_for('users.user_posts', user_id=user.id) }}">
+              {{ user.count_posts(user.id) }}
+            </a></td>
             <td>
               {% if current_user.is_administrator() or current_user.id == user.id %}
                 <a href="{{ url_for('users.account', user_id=user.id) }}" class="btn btn-secondary">変更</a>

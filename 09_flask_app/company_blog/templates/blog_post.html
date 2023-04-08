@@ -79,9 +79,10 @@
         <div class="position-sticky" style="top: 2rem">
           <!-- 検索欄 -->
           <div class="container-fluid mb-3">
-            <form action="#" class="d-flex" method="POST">
-              <input type="text" class="form-control me-2" placeholder="検索するテキストを入力">
-              <button type="submit" class="btn btn-outline-success">検索</button>
+            <form action="{{ url_for('main.search') }}" class="d-flex" method="POST">
+              {{ form.hidden_tag() }}
+              {{ render_field(form.searchText, class="form-control me-2", placeholder="検索するテキストを入力")}}
+              {{ form.submit(class="btn btn-outline-success") }}
             </form>
           </div>
           <!-- 会社情報 -->
@@ -96,13 +97,17 @@
               <span class="ms-2 fs-6">最新記事</span>
               <hr>
               <ol class="list-unstyled">
+                {% for recent_post in recent_blog_posts %}
                 <li>
-                  <a href="#" class="text-decoration-none">
-                    <img src="#" class="img-fluid" width="90" height="50">
-                    <span class="ms-2">タイトル</span>
+                  <a href="{{ url_for('main.blog_post', blog_post_id=recent_post.id) }}" class="text-decoration-none">
+                    {% if recent_post.featured_image %}
+                      <img src="{{ url_for('static', filename='featured_image/' + recent_post.featured_image) }}" class="img-fluid" width="90" height="50">
+                    {% endif %}
+                    <span class="ms-2">{{ recent_post.title }}</span>
                   </a>
                 </li>
                 <hr>
+                {% endfor %}
               </ol>
             </h4>
           </div>
@@ -113,20 +118,20 @@
               <span class="ms-2 fs-6">カテゴリ一覧</span>
               <hr>
               <ol class="list-unstyled">
+                {% for blog_category in blog_categories %}
                 <li>
-                  <a href="#" class="text-decoration-none">
-                    <img src="#" class="img-fluid" width="90" height="50">
-                    <span class="ms-2">カテゴリ</span>
+                  <a href="{{ url_for('main.category_search', blog_category_id=blog_category.id) }}" class="text-decoration-none">
+                    <span class="ms-2">{{ blog_category.category }}</span>
                   </a>
                 </li>
                 <hr>
+                {% endfor %}
               </ol>
             </h4>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
 
 {% endblock %}

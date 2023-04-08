@@ -86,8 +86,23 @@ def create_post():
 
 @main.route('/<int:blog_post_id>/blog_post')
 def blog_post(blog_post_id):
+    form = BlogSearchForm()
+    # ブログ記事の取得
     blog_post = BlogPost.query.get_or_404(blog_post_id)
-    return render_template('blog_post.html', post=blog_post)
+
+    # 最新記事の取得
+    recent_blog_posts = BlogPost.query.order_by(BlogPost.id.desc()).limit(5).all()
+
+    # カテゴリの取得
+    blog_categories = BlogCategory.query.order_by(BlogCategory.id.asc()).all()
+
+    return render_template(
+        'blog_post.html', 
+        post=blog_post, 
+        recent_blog_posts=recent_blog_posts, 
+        blog_categories=blog_categories,
+        form=form
+    )
 
 
 @main.route('/<int:blog_post_id>/delete_post', methods=['GET', 'POST'])
@@ -130,7 +145,6 @@ def update_blog_post(blog_post_id):
 
 @main.route('/')
 def index():
-    search_word = ''
     form = BlogSearchForm()
     # ブログ記事の取得
     page = request.args.get('page', 1, type=int)
@@ -177,4 +191,31 @@ def search():
         blog_categories=blog_categories,
         form=form,
         search_word=searchtext
+    )
+
+
+@main.route('/<int:blog_category_id>/category_search')
+def category_search(blog_category_id):
+    form = BlogSearchForm()
+
+    # カテゴリ名の取得
+    blog_category = BlogCategory.query.filter_by(id=blog_category_id).first_or_404()
+    print(blog_category)
+    # ブログ記事の取得
+    page = request.args.get('page', 1, type=int)
+    blog_posts = BlogPost.query.filter(BlogPost.category_id==blog_category_id).order_by(BlogPost.id.desc()).paginate(page=page, per_page=10)
+
+    # 最新記事の取得
+    recent_blog_posts = BlogPost.query.order_by(BlogPost.id.desc()).limit(5).all()
+
+    # カテゴリの取得
+    blog_categories = BlogCategory.query.order_by(BlogCategory.id.asc()).all()
+
+    return render_template(
+        'index.html', 
+        blog_posts=blog_posts, 
+        recent_blog_posts=recent_blog_posts, 
+        blog_categories=blog_categories,
+        form=form,
+        blog_category=blog_category
     )

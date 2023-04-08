@@ -68,7 +68,7 @@
           <tr>
             <td>{{ blog_category.id }}</td>
             <td>{{ blog_category.category }}</td>
-            <td><a href="#">ブログ管理数</a></td>
+            <td><a href="{{ url_for('main.category_search', blog_category_id=blog_category.id)}}">{{ blog_category.count_posts(blog_category.id) }}</a></td>
             <td>
               {% if current_user.is_administrator() %}
                 <a href="{{ url_for('main.update_category', category_id=blog_category.id) }}" class="btn btn-secondary">変更</a>
