@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, url_for, redirect, flash, abort
 from flask_login import login_required, current_user
-from company_blog.models import BlogCategory, BlogPost
-from company_blog.main.forms import BlogCategoryForm, UpdateCategoryForm, BlogPostForm, BlogSearchForm
+from company_blog.models import BlogCategory, BlogPost, Inquiry
+from company_blog.main.forms import BlogCategoryForm, UpdateCategoryForm, BlogPostForm, BlogSearchForm, InquiryForm
 from company_blog import db
 from company_blog.main.image_handler import add_featured_image
 
@@ -219,3 +219,58 @@ def category_search(blog_category_id):
         form=form,
         blog_category=blog_category
     )
+
+@main.route('/inquiry', methods=['GET', 'POST'])
+def inquiry():
+    form = InquiryForm()
+
+    if form.validate_on_submit():
+        inquiry_post = Inquiry(
+            name=form.name.data, 
+            email=form.email.data, 
+            title=form.title.data, 
+            text=form.text.data
+            )
+        db.session.add(inquiry_post)
+        db.session.commit()
+        flash('お問い合わせが送信されました')
+        return redirect(url_for('main.inquiry'))
+
+    return render_template('inquiry.html', form=form)
+
+
+@main.route('/inquiry_maintenance', methods=['GET', 'POST'])
+@login_required
+def inquiry_maintenance():
+    page = request.args.get('page', 1, type=int)
+    inquiry_posts = Inquiry.query.order_by(Inquiry.id.desc()).paginate(page=page, per_page=10)
+
+    return render_template('inquiry_maintenance.html', inquiry_posts=inquiry_posts)
+
+
+@main.route('/<int:inquiry_id>/display_inquiry')
+@login_required
+def display_inquiry(inquiry_id):
+    form = InquiryForm()
+    inquiry = Inquiry.query.get_or_404(inquiry_id)
+
+    form.name.data = inquiry.name
+    form.title.data = inquiry.title
+    form.email.data = inquiry.email
+    form.title.data = inquiry.title
+    form.text.data = inquiry.text
+
+    return render_template('inquiry.html', form=form, inquiry_id=inquiry_id)
+
+
+@main.route('/<int:inquiry_id>/delete_inquiry', methods=['GET', 'POST'])
+@login_required
+def delete_inquiry(inquiry_id):
+    inquiry = Inquiry.query.get_or_404(inquiry_id)
+    if not current_user.is_administrator():
+        abort(403)
+    db.session.delete(inquiry)
+    db.session.commit()
+    flash('お問い合わせが削除されました')
+    return redirect(url_for('main.inquiry_maintenance'))
+    

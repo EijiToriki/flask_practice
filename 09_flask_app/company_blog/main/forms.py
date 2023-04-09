@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, ValidationError, TextAreaField, SelectField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Email
 from company_blog.models import BlogCategory
 from flask_wtf.file import FileField, FileAllowed
 
@@ -45,3 +45,12 @@ class BlogPostForm(FlaskForm):
 class BlogSearchForm(FlaskForm):
     searchText = StringField('検索テキスト', validators=[DataRequired()])
     submit = SubmitField('検索')
+
+
+class InquiryForm(FlaskForm):
+    name = StringField('ユーザ名（必須）', validators=[DataRequired()])
+    email = StringField('メールアドレス（必須）', validators=[DataRequired(), Email(message='正しいメールアドレスを入力してください')])
+    title = StringField('ユーザ名')
+    text = TextAreaField('メッセージ本文（必須）', validators=[DataRequired()])
+    submit = SubmitField('更新')
+

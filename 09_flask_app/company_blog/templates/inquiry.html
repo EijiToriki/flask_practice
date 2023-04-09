@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+  <!-- モーダル -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">削除確認</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          このお問い合わせを削除しますか？
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+          <form action="{{url_for('main.delete_inquiry', inquiry_id=inquiry_id)}}" method="post">
+            <input type="submit" class="btn btn-danger" value="削除">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- お問い合わせフォーム -->
+  <section>
+    <div class="card mx-auto my-5" style="width: 80%;">
+      <h5 class="card-header fw-bolder fs-2 pt-3 p-lg-3">お問い合わせ</h5>
+      <div class="card-body">
+        <form method="post">
+        {{ form.hidden_tag() }}
+        {% if inquiry_id %}
+          <fieldset disabled>
+            <div class="fs-6">お名前（必須）</div>
+            <div class="mb-3">
+              {{ render_field(form.name, class="form-control")}}
+            </div>
+            <div class="fs-6">メールアドレス（必須）</div>
+            <div class="mb-3">
+              {{ render_field(form.email, class="form-control")}}
+            </div>
+            <div class="fs-6">題名</div>
+            <div class="mb-3">
+              {{ render_field(form.title, class="form-control")}}
+            </div>
+            <div class="fs-6">メッセージ本文</div>
+            <div class="mb-3">
+              {{ render_field(form.text, class="form-control")}}
+            </div>
+          </fieldset>
+        {% else %}
+          <div class="fs-6">お名前（必須）</div>
+          <div class="mb-3">
+            {{ render_field(form.name, class="form-control")}}
+          </div>
+          <div class="fs-6">メールアドレス（必須）</div>
+          <div class="mb-3">
+            {{ render_field(form.email, class="form-control")}}
+          </div>
+          <div class="fs-6">題名</div>
+          <div class="mb-3">
+            {{ render_field(form.title, class="form-control")}}
+          </div>
+          <div class="fs-6">メッセージ本文</div>
+          <div class="mb-3">
+            {{ render_field(form.text, class="form-control")}}
+          </div>
+        {% endif %}
+          {% if inquiry_id %}
+            {% if current_user.is_administrator() %}
+            <div class="d-grid gap-2 mb-3" style="width: 25%">
+              <button type="button" class="btn btn-danger text-light" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                削除
+              </button>
+            </div>
+            {% endif %}
+          {% else %}
+            <div class="d-grid gap-2 mb-3" style="width: 25%">
+              {{ form.submit(class="btn bg-success text-light", value="送信") }}
+            </div>
+          {% endif %}
+        </form>
+      </div>
+    </div>
+  </section>
+{% endblock %}

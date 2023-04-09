@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+
+  <section id="header">
+    <div class="container">
+      <div class="row bg-light my-3 justify-content-center">
+        <div class="col-10 py-4">
+          <h2 class="text-center fs-1">お問い合わせ管理</h2>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 更新テーブル -->
+  <section id="inquiry_table">
+    <div class="card mx-auto bg-light">
+      <div class="card-body">
+        <h4 class="card-title">お問い合わせ</h4>
+      </div>
+      <table class="table">
+        <thead>
+          <tr class="table-dark">
+            <th scope="col">ID</th>
+            <th scope="col">投稿者</th>
+            <th scope="col">メールアドレス</th>
+            <th scope="col">投稿日</th>
+            <th scope="col">タイトル</th>
+            <th scope="col">本文</th>
+            <th scope="col">詳細</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for inquiry_post in inquiry_posts.items %}
+          <tr>
+            <td>{{inquiry_post.id}}</td>
+            <td>{{inquiry_post.name}}</td>
+            <td>{{inquiry_post.email}}</td>
+            <td>{{inquiry_post.date.strftime('%Y/%m/%d')}}</td>
+            <td>{{inquiry_post.title | truncate(30)}}</td>
+            <td>{{inquiry_post.text | truncate(100)}}</td>
+            <td><a href="{{url_for('main.display_inquiry', inquiry_id=inquiry_post.id)}}" class="btn btn-secondary">詳細</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="pagenation">
+    <nav aria-label="mantenance_page_navigation">
+      <ul class="pagination my-3 justify-content-center">
+        <li {% if inquiry_posts.has_prev %}class="page-item"{% else %}class="page-item disabled"{% endif %}><a class="page-link" href="{% if inquiry_posts.has_prev %}{{url_for('main.inquiry_maintenance', page=inquiry_posts.prev_num) }}{% else %}#{% endif %}">前へ</a></li>
+
+        {% for page_num in inquiry_posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+          {% if page_num %}
+            {% if inquiry_posts.page == page_num %}
+              <li class="page-item disabled"><a class="page-link" href="#">{{ page_num }}</a></li>
+            {% else %}
+              <li class="page-item"><a class="page-link" href="{{url_for('main.inquiry_maintenance', page=page_num)}}">{{ page_num }}</a></li>
+            {% endif %}
+          {% else %}
+            <li class="page-item disabled"><a class="page-link" href="#">&hellip;</a></li>
+          {% endif %}
+        {% endfor %}
+        
+        <li {% if inquiry_posts.has_next %}class="page-item"{% else %}class="page-item disabled"{% endif %}><a class="page-link" href="{% if inquiry_posts.has_next %}{{url_for('main.inquiry_maintenance', page=inquiry_posts.next_num) }}{% else %}#{% endif %}">次へ</a></li>
+      </ul>
+    </nav>
+  </section>
+  
+{% endblock %}
