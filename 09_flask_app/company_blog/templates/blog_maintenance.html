@@ -28,30 +28,32 @@
       <div class="card-body">
         <h5 class="card-title">最近の投稿</h5>
       </div>
-      <table class="table">
-        <thead>
-          <tr class="table-dark">
-            <th scope="col">#</th>
-            <th scope="col">タイトル</th>
-            <th scope="col">作成日</th>
-            <th scope="col">著者</th>
-            <th scope="col">詳細</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for blog_post in blog_posts.items %}
-          <tr>
-            <td>{{ blog_post.id }}</td>
-            <td>{{ blog_post.title }}</td>
-            <td>{{ blog_post.date.strftime('%Y-%m-%d') }}</td>
-            <td>{{ blog_post.author.username }}</td>
-            <td>
-              <a href="{{ url_for('main.blog_post', blog_post_id=blog_post.id) }}" class="btn btn-secondary">詳細</a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-striped text-nowrap">
+          <thead>
+            <tr class="table-dark">
+              <th scope="col">#</th>
+              <th scope="col">タイトル</th>
+              <th scope="col">作成日</th>
+              <th scope="col">著者</th>
+              <th scope="col">詳細</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for blog_post in blog_posts.items %}
+            <tr>
+              <td>{{ blog_post.id }}</td>
+              <td>{{ blog_post.title | truncate(20) }}</td>
+              <td>{{ blog_post.date.strftime('%Y-%m-%d') }}</td>
+              <td>{{ blog_post.author.username | truncate(10) }}</td>
+              <td>
+                <a href="{{ url_for('main.blog_post', blog_post_id=blog_post.id) }}" class="btn btn-secondary">詳細</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 

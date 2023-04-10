@@ -1,25 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-  <!-- モーダル -->
-  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="deleteModalLabel">削除確認</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          このお問い合わせを削除しますか？
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
-          <form action="{{url_for('main.delete_inquiry', inquiry_id=inquiry_id)}}" method="post">
-            <input type="submit" class="btn btn-danger" value="削除">
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
+
 
   <!-- お問い合わせフォーム -->
   <section>
@@ -72,6 +53,26 @@
                 削除
               </button>
             </div>
+            <!-- モーダル -->
+            <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">削除確認</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    このお問い合わせを削除しますか？
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                    <form action="{{url_for('main.delete_inquiry', inquiry_id=inquiry_id)}}" method="post">
+                      <input type="submit" class="btn btn-danger" value="削除">
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
             {% endif %}
           {% else %}
             <div class="d-grid gap-2 mb-3" style="width: 25%">
@@ -82,4 +83,6 @@
       </div>
     </div>
   </section>
+
+
 {% endblock %}

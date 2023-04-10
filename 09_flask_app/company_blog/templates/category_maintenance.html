@@ -54,30 +54,32 @@
       <div class="card-body">
         <h5 class="card-title">最新のカテゴリ</h5>
       </div>
-      <table class="table">
-        <thead>
-          <tr class="table-dark">
-            <th scope="col">ID</th>
-            <th scope="col">カテゴリ名</th>
-            <th scope="col">プログ投稿数</th>
-            <th scope="col">変更</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for blog_category in blog_categories.items %}
-          <tr>
-            <td>{{ blog_category.id }}</td>
-            <td>{{ blog_category.category }}</td>
-            <td><a href="{{ url_for('main.category_search', blog_category_id=blog_category.id)}}">{{ blog_category.count_posts(blog_category.id) }}</a></td>
-            <td>
-              {% if current_user.is_administrator() %}
-                <a href="{{ url_for('main.update_category', category_id=blog_category.id) }}" class="btn btn-secondary">変更</a>
-              {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-striped text-nowrap">
+          <thead>
+            <tr class="table-dark">
+              <th scope="col">ID</th>
+              <th scope="col">カテゴリ名</th>
+              <th scope="col">プログ投稿数</th>
+              <th scope="col">変更</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for blog_category in blog_categories.items %}
+            <tr>
+              <td>{{ blog_category.id }}</td>
+              <td>{{ blog_category.category | truncate(20) }}</td>
+              <td><a href="{{ url_for('main.category_search', blog_category_id=blog_category.id)}}">{{ blog_category.count_posts(blog_category.id) }}</a></td>
+              <td>
+                {% if current_user.is_administrator() %}
+                  <a href="{{ url_for('main.update_category', category_id=blog_category.id) }}" class="btn btn-secondary">変更</a>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 

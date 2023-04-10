@@ -38,7 +38,7 @@
   <div class="container my-3">
     <div class="row mb-2">
       <!-- コンテンツ -->
-      <div class="col-8">
+      <div class="col-md-8">
         <!-- ブログ投稿 -->
         <section class="blog_post">
           <div class="container py-2 bg-light">
@@ -103,7 +103,7 @@
                     {% if recent_post.featured_image %}
                       <img src="{{ url_for('static', filename='featured_image/' + recent_post.featured_image) }}" class="img-fluid" width="90" height="50">
                     {% endif %}
-                    <span class="ms-2">{{ recent_post.title }}</span>
+                    <span class="ms-2">{{ recent_post.title | truncate(14) }}</span>
                   </a>
                 </li>
                 <hr>
@@ -121,7 +121,7 @@
                 {% for blog_category in blog_categories %}
                 <li>
                   <a href="{{ url_for('main.category_search', blog_category_id=blog_category.id) }}" class="text-decoration-none">
-                    <span class="ms-2">{{ blog_category.category }}</span>
+                    <span class="ms-2">{{ blog_category.category | truncate(20) }}</span>
                   </a>
                 </li>
                 <hr>

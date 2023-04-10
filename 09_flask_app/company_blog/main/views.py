@@ -273,4 +273,9 @@ def delete_inquiry(inquiry_id):
     db.session.commit()
     flash('お問い合わせが削除されました')
     return redirect(url_for('main.inquiry_maintenance'))
+
+
+@main.route('/info')
+def info():
+    return render_template('info.html')
     
