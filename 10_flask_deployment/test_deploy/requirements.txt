@@ -1,0 +1,8 @@
+requests==2.27.1
+flask==2.0.3
+click==8.0.4
+gunicorn==20.1.0
+itsdangerous==2.1.2
+jinja2==3.0.3
+markupSafe==2.1.1
+werkzeug==2.0.3
